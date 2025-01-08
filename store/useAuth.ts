@@ -1,10 +1,10 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface User {
   id: string
   username: string
-  // 其他用户信息...
 }
 
 interface AuthState {
@@ -22,8 +22,6 @@ export const useAuth = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       login: async (username: string, password: string) => {
-        // 这里应该调用你的登录 API
-        // 示例：模拟登录
         const fakeUser = { id: '1', username }
         const fakeToken = 'fake-token'
 
@@ -42,7 +40,8 @@ export const useAuth = create<AuthState>()(
       }
     }),
     {
-      name: 'auth-storage'
+      name: 'auth-storage',
+      storage: createJSONStorage(() => AsyncStorage)
     }
   )
 ) 

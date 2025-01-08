@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 interface State {
   count: number
 }
@@ -17,6 +18,9 @@ export const useCount = create<State & Actions>()(
       increment: () => set((state) => ({ count: state.count + 1 })),
       decrement: () => set((state) => ({ count: state.count - 1 })),
     }),
-    { name: 'count' }
+    {
+      name: 'count',
+      storage: createJSONStorage(() => AsyncStorage)
+    }
   )
 )

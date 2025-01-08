@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yasol.expornrapp"
     },
     "web": {
       "bundler": "metro",
@@ -35,6 +36,20 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "dd790ab5-aed4-4f96-a611-c64540bfd1c3"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/dd790ab5-aed4-4f96-a611-c64540bfd1c3"
     }
   }
 }
