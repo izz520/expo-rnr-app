@@ -51,12 +51,17 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerBackTitle: '返回',
+        }}
+      >
         <Stack.Screen
-          name='index'
+          name='(tabs)'
           options={{
-            title: 'Starter Base',
-            headerRight: () => <ThemeToggle />,
+            // title: 'Starter Base',
+            headerShown: false,
+            // headerRight: () => <ThemeToggle />,
           }}
         />
       </Stack>
