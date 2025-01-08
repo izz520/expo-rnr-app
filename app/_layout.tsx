@@ -1,7 +1,6 @@
 import '~/global.css';
 
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -10,6 +9,9 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { useEffect } from 'react'
+import { Stack, useSegments, useRouter } from 'expo-router'
+import { useAuth } from '../store/useAuth'
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -25,49 +27,40 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
+function useProtectedRoute() {
+  const segments = useSegments()
+  const router = useRouter()
+  const isAuthenticated = useAuth((state) => state.isAuthenticated)
+
+  useEffect(() => {
+    const inAuthGroup = segments[0] === 'login'
+
+    if (!isAuthenticated && !inAuthGroup) {
+      // 如果未登录且不在登录页面，重定向到登录页
+      router.replace('/login')
+    } else if (isAuthenticated && inAuthGroup) {
+      // 如果已登录但在登录页面，重定向到首页
+      router.replace('/(tabs)')
+    }
+  }, [isAuthenticated, segments])
+}
+
 export default function RootLayout() {
-  const hasMounted = React.useRef(false);
-  const { colorScheme, isDarkColorScheme } = useColorScheme();
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
-
-  useIsomorphicLayoutEffect(() => {
-    if (hasMounted.current) {
-      return;
-    }
-
-    if (Platform.OS === 'web') {
-      // Adds the background color to the html element to prevent white background on overscroll.
-      document.documentElement.classList.add('bg-background');
-    }
-    setAndroidNavigationBar(colorScheme);
-    setIsColorSchemeLoaded(true);
-    hasMounted.current = true;
-  }, []);
-
-  if (!isColorSchemeLoaded) {
-    return null;
-  }
+  useProtectedRoute()
 
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack
-        screenOptions={{
-          headerBackTitle: '返回',
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="login"
+        options={{
+          headerShown: false,
+          // 禁用返回手势
+          gestureEnabled: false
         }}
-      >
-        <Stack.Screen
-          name='(tabs)'
-          options={{
-            // title: 'Starter Base',
-            headerShown: false,
-            // headerRight: () => <ThemeToggle />,
-          }}
-        />
-      </Stack>
-      <PortalHost />
-    </ThemeProvider>
-  );
+      />
+    </Stack>
+  )
 }
 
 const useIsomorphicLayoutEffect =
